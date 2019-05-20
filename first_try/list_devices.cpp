@@ -3,13 +3,14 @@
 #include <CL/cl.h>
 #include "clext.h"
 
+
 void printDevicesOnPlatform(cl_platform_id platform){
 
     cl_uint num_devices, i;
     clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
 	fprintf(stdout, "Found %d devices.\n", num_devices);
 
-    cl_device_id* devices = calloc(sizeof(cl_device_id), num_devices);
+    cl_device_id devices[num_devices];
     clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, num_devices, devices, NULL);
 
     char buf[128];
@@ -21,7 +22,6 @@ void printDevicesOnPlatform(cl_platform_id platform){
         fprintf(stdout, "%s\n", buf);
     }
 
-    free(devices);
 
 }
 
@@ -33,13 +33,13 @@ int main(int argc, char* const argv[]) {
 	fprintf(stdout, "Found %d platforms.\n", num_platforms);
 
 	char outBuf[256];
-	cl_uint outBufWritten = 0;
+	size_t outBufWritten = 0;
 	for(cl_uint i = 0; i < num_platforms; i++){
-		clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 256, outBuf, outBufWritten);
+		clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 256, outBuf, &outBufWritten);
 		fprintf(stdout, "Platform name %s.\n", outBuf);
 		printDevicesOnPlatform(platforms[i]);
 
 	}
 
-
 }
+
