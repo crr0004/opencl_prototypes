@@ -57,6 +57,7 @@ set( COMPILER_FLAGS "-fpermissive" )
 set( LINKER_FLAGS " " )
 set( ADDITIONAL_LIBRARIES "" )
 message(STATUS "Including " ${OPENCL_INCLUDE_DIRS} " on all targets")
+message(STATUS "Using OpenCL library " ${OPENCL_LIBRARIES})
 include_directories(SYSTEM ${OPENCL_INCLUDE_DIRS})
 
 file(GLOB INCLUDE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h" )

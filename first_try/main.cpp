@@ -9,6 +9,26 @@
 #include "clext.h"
  
 #define MAX_SOURCE_SIZE (0x100000)
+void printDevicesOnPlatform(cl_platform_id platform){
+
+    cl_uint num_devices, i;
+    clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, NULL, &num_devices);
+	fprintf(stdout, "Found %d devices.\n", num_devices);
+
+    cl_device_id devices[num_devices];
+    clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, num_devices, devices, NULL);
+
+    char buf[128];
+    for (i = 0; i < num_devices; i++) {
+        clGetDeviceInfo(devices[i], CL_DEVICE_NAME, 128, buf, NULL);
+        fprintf(stdout, "Device %s supports ", buf);
+
+        clGetDeviceInfo(devices[i], CL_DEVICE_VERSION, 128, buf, NULL);
+        fprintf(stdout, "%s\n", buf);
+    }
+
+
+}
  
 int main(void) {
     // Create the two input vectors
@@ -36,12 +56,22 @@ int main(void) {
     fclose( fp );
  
     // Get platform and device information
-    cl_platform_id platform_id = NULL;
+    cl_platform_id platform_id[2];
     cl_device_id device_id = NULL;   
     cl_uint ret_num_devices;
     cl_uint ret_num_platforms;
-    cl_int ret = clGetPlatformIDs(1, &platform_id, &ret_num_platforms);
-    ret = clGetDeviceIDs( platform_id, CL_DEVICE_TYPE_DEFAULT, 1, 
+    cl_int ret = clGetPlatformIDs(2, platform_id, &ret_num_platforms);
+
+	char outBuf[256];
+	size_t outBufWritten = 0;
+	for(cl_uint i = 0; i < ret_num_platforms; i++){
+		clGetPlatformInfo(platform_id[i], CL_PLATFORM_NAME, 256, outBuf, &outBufWritten);
+		fprintf(stdout, "%d Platform name %s.\n", i, outBuf);
+		printDevicesOnPlatform(platform_id[i]);
+
+	}
+
+    ret = clGetDeviceIDs( platform_id[0], CL_DEVICE_TYPE_DEFAULT, 1, 
             &device_id, &ret_num_devices);
  
     if(ret != CL_SUCCESS){
