@@ -9,6 +9,16 @@
 #include "clext.h"
  
 #define MAX_SOURCE_SIZE (0x100000)
+void printDeviceInfo(cl_device_id id){
+    char buf[128];
+        clGetDeviceInfo(id, CL_DEVICE_NAME, 128, buf, NULL);
+        fprintf(stdout, "Device %s supports ", buf);
+
+        clGetDeviceInfo(id, CL_DEVICE_VERSION, 128, buf, NULL);
+        fprintf(stdout, "%s\n", buf);
+
+}
+
 void printDevicesOnPlatform(cl_platform_id platform){
 
     cl_uint num_devices, i;
@@ -18,15 +28,9 @@ void printDevicesOnPlatform(cl_platform_id platform){
     cl_device_id devices[num_devices];
     clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, num_devices, devices, NULL);
 
-    char buf[128];
     for (i = 0; i < num_devices; i++) {
-        clGetDeviceInfo(devices[i], CL_DEVICE_NAME, 128, buf, NULL);
-        fprintf(stdout, "Device %s supports ", buf);
-
-        clGetDeviceInfo(devices[i], CL_DEVICE_VERSION, 128, buf, NULL);
-        fprintf(stdout, "%s\n", buf);
+		printDeviceInfo(devices[i]);
     }
-
 
 }
  
@@ -73,11 +77,18 @@ int main(void) {
 
     ret = clGetDeviceIDs( platform_id[0], CL_DEVICE_TYPE_DEFAULT, 1, 
             &device_id, &ret_num_devices);
+
+	clGetPlatformInfo(platform_id[0], CL_PLATFORM_NAME, 256, outBuf, &outBufWritten);
+	fprintf(stdout, "Using %d Platform name %s.\n", i, outBuf);
+	printDeviceInfo(device_id);
  
     if(ret != CL_SUCCESS){
 		clCheckError(ret);
 		exit(1);
 	}
+
+
+
     // Create an OpenCL context
     cl_context context = clCreateContext( NULL, 1, &device_id, NULL, NULL, &ret);
  
