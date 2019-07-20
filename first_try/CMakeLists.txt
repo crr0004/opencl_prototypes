@@ -1,14 +1,12 @@
-
-############################################################################
-
 cmake_minimum_required( VERSION 2.6.0 )
-project( OpenClPrototypes )
+project( first_try )
 
 set( SAMPLE_NAME main )
 set( SOURCE_FILES 
 		main.cpp 
 )
 set( EXTRA_FILES kernel.cl )
+
 
 # Set CMAKE_BUILD_TYPE (default = Release)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
@@ -28,11 +26,10 @@ mark_as_advanced(OPENCL_INCLUDE_DIRS)
 
 find_library(OPENCL_LIBRARIES
 	NAMES OpenCL libOpenCL.so
-	PATHS
-	ENV OPENCL_PATH
 	PATH_SUFFIXES
 	lib/x86_64/
 	/opt/amdgpu-pro/lib64/
+	HINTS ENV OPENCL_PATH
 )
 
 ############################################################################
@@ -43,6 +40,9 @@ set( COMPILER_FLAGS "-fpermissive" )
 set( LINKER_FLAGS " " )
 set( ADDITIONAL_LIBRARIES "" )
 set(LIBS ${OPENCL_LIBRARIES} ${ADDITIONAL_LIBRARIES})
+message(STATUS "Including " ${OPENCL_INCLUDE_DIRS} " on all targets")
+message(STATUS "Using OpenCL library " ${OPENCL_LIBRARIES})
+include_directories(SYSTEM ${OPENCL_INCLUDE_DIRS})
 
 file(GLOB INCLUDE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h" )
 
@@ -62,6 +62,11 @@ set_target_properties( list_devices PROPERTIES
 
 # Set output directory to bin
 set(EXECUTABLE_OUTPUT_PATH bin)
+target_link_libraries( ${SAMPLE_NAME} ${OPENCL_LIBRARIES} ${ADDITIONAL_LIBRARIES} )
+target_link_libraries( list_devices ${OPENCL_LIBRARIES} ${ADDITIONAL_LIBRARIES} )
+
+# Set output directory to bin
+set(EXECUTABLE_OUTPUT_PATH bin/)
 
 # Copy extra files to binary directory
 foreach( extra_file ${EXTRA_FILES} )

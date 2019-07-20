@@ -98,6 +98,7 @@ const char* clGetErrorString(int errorCode) {
 int clCheckError(int errorCode) {
 	if (errorCode != 0) {
 		fprintf(stderr, "%s\n", clGetErrorString(errorCode));
+		exit(1);
 	}
 	return errorCode;
 }
